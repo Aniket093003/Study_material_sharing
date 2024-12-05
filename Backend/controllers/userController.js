@@ -43,11 +43,7 @@ const signupUser = async (req, res) => {
       console.error(error);
       res.status(500).json({ Error: true, message: "Internal server error" });
     }
-  };
-
-   
-     
-  
+  };   
 
 const signinUser = async (req, res) => {
     try {

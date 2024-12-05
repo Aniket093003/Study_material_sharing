@@ -16,7 +16,7 @@ const uploadMaterial = async (req, res) => {
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
-};
+}; 
 const getMaterial = async (req, res) => {
     try {
         const materials = await Material.find().populate('uploadedBy', 'fullname','email');
