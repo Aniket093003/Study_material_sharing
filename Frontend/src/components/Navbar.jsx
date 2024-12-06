@@ -1,18 +1,27 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-const Navbar = () => {
+const Navbar = ({ openSignUpModal, openSignInModal }) => {
   return (
-    <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
-      <h1 className="text-2xl font-bold cursor-pointer">Material Share</h1>
-      <div className="flex items-center gap-4">
-        <button className="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-gray-200">
-          Sign In
-        </button>
-        <button className="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-gray-200">
-          Sign Up
-        </button>
+    <nav className="bg-blue-600 p-4">
+      <div className="flex justify-between items-center">
+        <Link to="/" className="text-white text-xl font-bold">Study Material Sharing</Link>
+        <div>
+          <button
+            onClick={openSignInModal} 
+            className="bg-white text-blue-600 px-6 py-2 rounded-md hover:bg-blue-100"
+          >
+            Sign In
+          </button>
+          <button
+            onClick={openSignUpModal} 
+            className="ml-4 bg-white text-blue-600 px-6 py-2 rounded-md hover:bg-blue-100"
+          >
+            Sign Up
+          </button>
+        </div>
       </div>
-    </div>
+    </nav>
   );
 };
 

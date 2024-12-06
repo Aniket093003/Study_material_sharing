@@ -7,8 +7,7 @@ const HeroSection = () => {
       <p className="text-lg mb-6">
         Discover PDFs across various categories or share your own materials with the community.
       </p>
-      <button className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700">
-        Upload Material
+      <button className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700">Upload Material
       </button>
     </div>
   );
