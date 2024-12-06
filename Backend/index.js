@@ -5,8 +5,13 @@ import connectDB from "./db/index.js";
 import userRouter from "./routes/user.routes.js";
 import materialRouter from "./routes/material.route.js";
 connectDB();
-
+import cors from "cors";
 const app = express();
+
+app.use(cors({
+  origin: "http://localhost:5173", // Frontend URL
+  methods: ["GET", "POST"],
+}));
 app.use(express.json());
 
 app.use("/api/user", userRouter);
