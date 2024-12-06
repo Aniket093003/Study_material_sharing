@@ -32,7 +32,7 @@ const signupUser = async (req, res) => {
       });
   
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-      console.log(token);
+      console.log(user);
   
       res.json({
         message: "Congratulation, You are signed up as user",
