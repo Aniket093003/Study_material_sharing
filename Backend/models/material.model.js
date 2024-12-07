@@ -1,24 +1,56 @@
 import mongoose from 'mongoose';
-
-
+import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
 const materialSchema = new mongoose.Schema({
     title: { 
         type: String, 
-        required: true 
+        required: true,
+        index: true
     },
     category: { 
         type: String, 
         required: true, 
-        enum: ['tech', 'health', 'finance', 'trading', 'other'],
-        default: 'others'
+        enum: ['tech', 'health', 'finance', 'trading'], 
     },
-    fileUrl: { 
-        type: String, 
-        required: true },
+    material: [
+        {
+            size: {
+                type: String, 
+            },
+            name: {
+                type: String, 
+                required: true,
+            },
+            format: {
+                type: String, 
+                required: true,
+            },
+            information: {
+                type: String, 
+                required: true,
+            },
+        }
+    ],
+    pdf_url: {
+        type: String,
+        required: true,
+    },
+
     uploadedBy: { 
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User' },
-}) 
+        ref: 'User', 
+        required: true,
+    },
+    isPublic:{
+        type: Boolean,
+        default: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now, 
+    }
+});
 
-const Material = mongoose.model("Material", materialSchema);
-export default Material;
+materialSchema.plugin(mongooseAggregatePaginate)
+
+const Book = mongoose.model("Book", materialSchema);
+export default Book;
