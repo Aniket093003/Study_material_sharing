@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./home/Home";
-import SignUp from "./Screens/Signup";
+import SignUp from "./Screens/SignUp";
 import SignIn from "./Screens/SignIn";
 const App = () => {
   
