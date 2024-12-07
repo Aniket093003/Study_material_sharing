@@ -1,16 +1,16 @@
-import Material from "../models/material.model.js";
+import Book from "../models/material.model.js";
 
 const uploadMaterial = async (req, res) => {
-    const { title, category, fileUrl} = req.body;
+    const { title, category, material} = req.body;
 
     try {
-        const material = await Material.create({
+        const Upload = await Book.create({
             title,
             category,
-            fileUrl,
+            material,
             uploadedBy: req.user,
         });
-        res.status(201).json({ material,
+        res.status(201).json({ Upload ,
             msg: "material added"
          });
     } catch (error) {
@@ -19,7 +19,7 @@ const uploadMaterial = async (req, res) => {
 }; 
 const getMaterial = async (req, res) => {
     try {
-        const materials = await Material.find().populate('uploadedBy', 'fullname','email');
+        const materials = await Book.find().populate('uploadedBy', 'fullname','email');
         res.status(200).json({ materials });
     } catch (error) {
         res.status(400).json({ message: error.message });
