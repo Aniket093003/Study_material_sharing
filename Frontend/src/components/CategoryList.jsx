@@ -15,7 +15,7 @@ const CategoryList = () => {
         {categories.map((category, index) => (
           <div
             key={index}
-            className="bg-gray-100 p-4 text-center rounded-md shadow-md hover:bg-gray-200"
+            className="bg-gray-100 p-4 text-center rounded-md shadow-md hover:bg-gray-200 cursor-pointer"
           >
             <div className="text-3xl">{category.icon}</div>
             <h3 className="text-lg font-semibold mt-2">{category.name}</h3>
