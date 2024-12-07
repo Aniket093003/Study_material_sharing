@@ -20,7 +20,7 @@ const SignIn = ({ handleLogin, closeModal }) => {
         password,
       });
       const token = response.data.token;
-      handleLogin(token); // Notify parent of successful login
+      handleLogin(token); 
     } catch (err) {
       setError(err.response?.data?.message || "Incorect Credintials");
     }
