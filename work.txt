@@ -1,0 +1,5 @@
+1. Button ya clikable -> cursor pointer
+2. My library 
+3. api for upload
+4. api for show.
+5. integrate thore api and then show 
