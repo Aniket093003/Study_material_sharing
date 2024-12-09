@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import dotenv from 'dotenv';
+dotenv.config();
 const userSchema = new mongoose.Schema(
   {
     fullName: {
@@ -56,7 +58,6 @@ userSchema.methods.generateAccessToken = function(){
         }
     )
 }
-userSchema.methods.generateRefreshToken = function(){}
 
 const User = mongoose.model("User", userSchema);
 
