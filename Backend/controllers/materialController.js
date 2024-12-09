@@ -1,13 +1,13 @@
 import Book from "../models/material.model.js";
 
 const uploadMaterial = async (req, res) => {
-    const { title, category, material} = req.body;
+    const { title, category, book} = req.body;
 
     try {
         const Upload = await Book.create({
             title,
             category,
-            material,
+            book,
             uploadedBy: req.user,
         });
         res.status(201).json({ Upload ,
