@@ -1,4 +1,6 @@
 import Book from "../models/material.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+
 
 const uploadMaterial = async (req, res) => {
     const { title, category, book} = req.body;
