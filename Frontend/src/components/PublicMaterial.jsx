@@ -10,11 +10,10 @@ const MaterialList = () => {
   }, []);
 
   const fetchMaterials = async () => {
-    setLoading(true); // Show loading state while fetching
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
 
-      // Fetch public materials
       const response = await fetch("http://localhost:4000/material/public", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -30,32 +29,36 @@ const MaterialList = () => {
     } catch (error) {
       setErrorMessage("Server error. Please try again.");
     } finally {
-      setLoading(false); // Hide loading state after fetching
+      setLoading(false);
     }
   };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Materials</h2>
-      
-      {/* Error Message */}
+
       {errorMessage && (
         <div className="bg-red-100 text-red-600 p-4 rounded-lg mb-6">
           {errorMessage}
         </div>
       )}
 
-      {/* Loading State */}
       {loading && <p className="text-gray-500">Loading materials...</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {/* Display Materials */}
         {materials.length > 0 ? (
           materials.map((material) => (
-            <div key={material._id} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition">
-              <h3 className="text-xl font-semibold text-gray-800">{material.title}</h3>
+            <div
+              key={material._id}
+              className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition"
+            >
+              <h3 className="text-xl font-semibold text-gray-800">
+                {material.title}
+              </h3>
               <p className="text-gray-600">Category: {material.category}</p>
-              <p className="text-gray-600">Uploaded by: {material.uploadedBy.name}</p>
+              <p className="text-gray-600">
+                Uploaded by: {material.uploadedBy.name}
+              </p>
               <div className="mt-4">
                 <a
                   href={material.book[0].pdf}
@@ -69,7 +72,9 @@ const MaterialList = () => {
             </div>
           ))
         ) : (
-          <p className="col-span-full text-center text-gray-500">No materials available.</p>
+          <p className="col-span-full text-center text-gray-500">
+            No materials available.
+          </p>
         )}
       </div>
     </div>
