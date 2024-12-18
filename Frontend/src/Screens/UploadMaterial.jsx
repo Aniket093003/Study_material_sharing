@@ -1,153 +1,122 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const UploadMaterial = () => {
-  const [file, setFile] = useState(null); // For the selected file
-  const [name, setName] = useState(""); // Name of the material
-  const [category, setCategory] = useState(""); // Category selection
-  const [message, setMessage] = useState(""); // Success/error messages
-  const [loading, setLoading] = useState(false); // Upload progress
-  const [modalOpen, setModalOpen] = useState(false); // Modal open state
-
-  const categories = ["Technology", "Health", "Finance", "Trading"]; // Category options
+const UploadMaterial = ({ closeModal }) => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("tech");
+  const [file, setFile] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate input
-    if (!file || !name || !category) {
-      setMessage("Please fill in all fields and select a file.");
+    if (!title || !description || !category || !file) {
+      setError("All fields are required.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError("File size exceeds 5MB.");
       return;
     }
 
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("name", name);
+    formData.append("title", title);
+    formData.append("description", description);
     formData.append("category", category);
+    formData.append("file", file);
 
     try {
-      setLoading(true);
-      setMessage("");
-
+      const token = localStorage.getItem("authToken");
       const response = await axios.post(
         "http://localhost:4000/api/material/upload",
-        formData
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
-      setMessage("File uploaded successfully!");
-      console.log(response.data);
-      setFile(null);
-      setName("");
+      setSuccessMessage("Material uploaded successfully!");
+      setError("");
+
+      setTitle("");
+      setDescription("");
       setCategory("");
-      setModalOpen(false); // Close modal on success
-    } catch (error) {
-      setMessage("File upload failed. Please try again.");
-      console.error(error);
-    } finally {
-      setLoading(false);
+      setFile(null);
+
+      setTimeout(() => {
+        closeModal();
+      }, 1500);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to upload material.");
     }
   };
 
-  const closeModal = () => {
-    setModalOpen(false);
+  const handleOutsideClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeModal();
+    }
   };
 
   return (
-    <div>
-      {/* Button to open modal */}
-      <button
-        onClick={() => setModalOpen(true)}
-        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+      onClick={handleOutsideClick}
+    >
+      <div
+        className="bg-white p-6 rounded-lg w-96"
+        onClick={(e) => e.stopPropagation()} 
       >
-        Upload Material
-      </button>
+        <h2 className="text-2xl font-bold mb-4 text-center">Upload Material</h2>
 
-      {/* Modal */}
-      {modalOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-          onClick={closeModal} // Close modal when clicking outside
-        >
-          <div
-            className="bg-white p-6 rounded-lg w-full max-w-lg"
-            onClick={(e) => e.stopPropagation()} // Prevent click event propagation inside modal
+        {successMessage && (
+          <p className="text-green-500 text-center mb-4">{successMessage}</p>
+        )}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-2 mb-4 border rounded"
+          />
+          <textarea
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full p-2 mb-4 border rounded"
+            rows="3"
+          />
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full p-2 mb-4 border rounded"
           >
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Material Name */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">
-                  Material Name
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter material name"
-                  className="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300"
-                  required
-                />
-              </div>
-
-              {/* Category Selection */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">
-                  Select Category
-                </label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300"
-                  required
-                >
-                  <option value="" disabled>
-                    Choose a category
-                  </option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* File Input */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">
-                  Upload File
-                </label>
-                <input
-                  type="file"
-                  onChange={(e) => setFile(e.target.files[0])}
-                  className="w-full border p-2 rounded-lg focus:ring focus:ring-blue-300"
-                  required
-                />
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-                disabled={loading}
-              >
-                {loading ? "Uploading..." : "Upload Material"}
-              </button>
-
-              {/* Message */}
-              {message && (
-                <p
-                  className={`mt-4 text-center ${
-                    message.includes("successfully")
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {message}
-                </p>
-              )}
-            </form>
-          </div>
-        </div>
-      )}
+            <option value="tech">Tech</option>
+            <option value="health">Health</option>
+            <option value="finance">Finance</option>
+            <option value="trading">Trading</option>
+          </select>
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files[0])}
+            className="w-full p-2 mb-4 border rounded"
+          />
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 w-full"
+          >
+            Upload
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
