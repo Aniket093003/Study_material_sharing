@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import UploadMaterial from "../Screens/UploadMaterial"; // Import the UploadMaterial modal
+import UploadMaterial from "../Screens/UploadMaterial"; 
 
 const HeroSection = () => {
-  const [showUploadModal, setShowUploadModal] = useState(false); // State to manage modal visibility
+  const [showUploadModal, setShowUploadModal] = useState(false); 
 
   const openUploadModal = () => setShowUploadModal(true);
   const closeUploadModal = () => setShowUploadModal(false);
@@ -15,13 +15,13 @@ const HeroSection = () => {
       </p>
       <button
         className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700"
-        onClick={openUploadModal} // Open modal on button click
+        onClick={openUploadModal} 
       >
         Upload Material
       </button>
 
       {showUploadModal && (
-        <UploadMaterial closeModal={closeUploadModal} /> // Render modal conditionally
+        <UploadMaterial closeModal={closeUploadModal} /> 
       )}
     </div>
   );
