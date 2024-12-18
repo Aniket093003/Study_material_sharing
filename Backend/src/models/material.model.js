@@ -8,20 +8,17 @@ const materialSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    description: { type: String, required: true },
     category: {
       type: String,
       required: true,
       enum: ["tech", "health", "finance", "trading"],
     },
-    fileUrl: { type: String, required: true },
+    file: { type: String, required: true },
 
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
-    },
-    isPublic: {
-      type: Boolean,
-      default: true,
     },
   },
   { timestamps: true }
