@@ -48,7 +48,7 @@ const HomePage = () => {
   const fetchUserMaterials = async () => {
     try {
       const token = localStorage.getItem("userToken");
-      const response = await axios.get("http://localhost:4000/api/my-materials", {
+      const response = await axios.get("http://localhost:4000/api/material/get", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUserMaterials(response.data); // Store materials in state
