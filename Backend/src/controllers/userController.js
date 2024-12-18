@@ -22,16 +22,16 @@ const signupUser = async (req, res) => {
           message: "you already have an account please login",
         });
       }
-  
+      const hashedPassword = await bcrypt.hash(password, 10);
+
   
       const user = await User.create({
           fullName,
           email,
-          password,
+          password: hashedPassword,
       });
   
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-      console.log(user);
   
       res.json({
         message: "Congratulation, You are signed up as user",
@@ -51,7 +51,7 @@ const signinUser = async (req, res) => {
       if (!user) return res.status(404).json('User not found');
   
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) return res.status(400).send('Invalid credentials');
+      if (!isMatch) return res.status(400).json({msg: 'Invalid credentials'});
   
       const token = jwt.sign({ id: user._id}, process.env.JWT_SECRET, { expiresIn: '2h' });
       res.json({ 

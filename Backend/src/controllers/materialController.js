@@ -1,73 +1,37 @@
-import Book from "../models/material.model.js";
-
+import cloudinary from '../config/cloudinary.js';
+import Book from '../models/material.model.js';
 const uploadMaterial = async (req, res) => {
     try {
-        // Fields from req.body (except pdf file)
-        const { title, category, isPublic, bookTitle, bookAvatar } = req.body;
-        const userId = req.user.id; // Get the user ID from JWT
-    
-        if (!title || !category || !bookTitle || !bookAvatar || !req.file) {
-            return res.status(400).json({ error: "All fields are required." });
+        // Check if file exists
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
         }
-    
-        // Upload the PDF file to Cloudinary
-        const pdfUpload = await cloudinaryV2.uploader.upload_stream(
-          { resource_type: "auto" }, // cloudinary upload type
-          (error, result) => {
-            if (error) {
-                console.error("Error uploading PDF:", error);
-                return res.status(500).json({ error: "Error uploading PDF." });
+
+        // Upload file to Cloudinary
+        const result =  cloudinary.uploader.upload_stream(
+            { folder: 'study_materials', resource_type: 'auto' },
+            (error, result) => {
+                if (error) {
+                    console.error('Cloudinary Upload Error:', error);
+                    return res.status(500).json({ error: 'File upload failed', err: error.message });
+                }
+                // Success response
+                return res.status(200).json({ message: 'File uploaded successfully', result });
             }
-    
-            // Create a new material document
-            const newBook = new Book({
-                title,
-                category,
-                book: [
-                    {
-                        title: bookTitle,
-                        avatar: bookAvatar, // Can be a URL or uploaded file
-                        pdf: result.secure_url, // Cloudinary URL for PDF
-                    },
-                ],
-                uploadedBy: userId,
-                isPublic,
-            });
-    
-            // Save to database
-            newBook.save()
-                .then((savedMaterial) => {
-                    res.status(200).json(savedMaterial);
-                })
-                .catch((err) => {
-                    console.error("Error saving to DB:", err);
-                    res.status(500).json({ error: "Error saving to database." });
-                });
-          }
-        );
-    
-        req.file.stream.pipe(pdfUpload); // Pipe the file stream to Cloudinary
+        ).end(req.file.buffer); // Send buffer to Cloudinary
+
     } catch (err) {
-        console.error("Error:", err);
-        res.status(500).json({ error: "Server error. Please try again." });
+        console.error('Controller Error:', err);
+        res.status(500).json({ error: 'File upload failed', err: err.message });
     }
 };
-const getMaterial = async (req, res) => {
+
+const getMaterials = async (req, res) => {
     try {
-        const materials = await Book.find({ isPublic: true }).populate('uploadedBy', 'name email');
+        const materials = await Book.find();
         res.json(materials);
-      } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch materials' });
-      }
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch materials' });
+    }
 };
-const MyLibrary = async (req, res) => {
-    try {
-        const materials = await Book.find({ uploadedBy: req.user.id }).populate('uploadedBy', 'name email');
-        res.json(materials);
-      } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch user materials' });
-      }
-}
-
-
-export { uploadMaterial, getMaterial, MyLibrary};
+export {getMaterials, uploadMaterial}

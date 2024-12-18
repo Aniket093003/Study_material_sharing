@@ -13,22 +13,7 @@ const materialSchema = new mongoose.Schema(
       required: true,
       enum: ["tech", "health", "finance", "trading"],
     },
-    book: [
-      {
-        title: {
-          type: String,
-          
-        },
-        avatar: {
-          type: String,
-          
-        },
-        pdf: {
-          type: String,
-          
-        },
-      },
-    ],
+    fileUrl: { type: String, required: true },
 
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
