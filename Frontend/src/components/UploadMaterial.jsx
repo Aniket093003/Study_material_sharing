@@ -1,139 +1,98 @@
 import React, { useState } from "react";
+import axios from "axios";
 
-const UploadMaterialForm = () => {
+const UploadMaterial = ({ closeModal }) => {
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("tech");
-  const [bookTitle, setBookTitle] = useState("");
-  const [bookAvatar, setBookAvatar] = useState("");
-  const [pdfFile, setPdfFile] = useState(null);
-  const [isPublic, setIsPublic] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const handleFileChange = (e) => {
-    setPdfFile(e.target.files[0]);
-  };
+  const [category, setCategory] = useState("tech"); // Default category
+  const [file, setFile] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate inputs
-    if (!title || !category || !bookTitle || !bookAvatar || !pdfFile) {
-      setErrorMessage("All fields are required.");
+    if (!title || !category || !file) {
+      setError("All fields are required.");
       return;
     }
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("category", category);
-    formData.append("bookTitle", bookTitle);
-    formData.append("bookAvatar", bookAvatar);
-    formData.append("isPublic", isPublic);
-    formData.append("pdf", pdfFile); // Attach the PDF file here
+    formData.append("file", file);
 
     try {
-      const token = localStorage.getItem("token"); // Assuming the token is saved in localStorage
-
-      const response = await fetch("http://localhost:5000/materials/upload", {
-        method: "POST",
+      const token = localStorage.getItem("authToken"); // Retrieve token for authentication
+      const response = await axios.post("http://localhost:4000/api/material/upload", formData, {
         headers: {
-          Authorization: `Bearer ${token}`, // Send JWT token in Authorization header
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
-        body: formData, // Send form data
       });
 
-      const result = await response.json();
+      setSuccessMessage("Material uploaded successfully!");
+      setError("");
+      setTimeout(() => {
+        closeModal();
+      }, 1500); // Close modal after 1.5 seconds
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to upload material.");
+    }
+  };
 
-      if (response.ok) {
-        alert("Material uploaded successfully!");
-        setTitle("");
-        setCategory("tech");
-        setBookTitle("");
-        setBookAvatar("");
-        setPdfFile(null);
-        setIsPublic(true);
-        setErrorMessage(""); // Clear error
-      } else {
-        setErrorMessage(result.error || "An error occurred.");
-      }
-    } catch (error) {
-      setErrorMessage("Server error. Please try again.");
+  const handleOutsideClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeModal(); // Close modal when clicking outside
     }
   };
 
   return (
-    <div>
-      <h2>Upload Material</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Title</label>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+      onClick={handleOutsideClick}
+    >
+      <div
+        className="bg-white p-6 rounded-lg w-96"
+        onClick={(e) => e.stopPropagation()} // Prevent modal from closing when clicking inside
+      >
+        <h2 className="text-2xl font-bold mb-4 text-center">Upload Material</h2>
+
+        {successMessage && <p className="text-green-500 text-center mb-4">{successMessage}</p>}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+        <form onSubmit={handleSubmit}>
           <input
             type="text"
+            placeholder="Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            required
+            className="w-full p-2 mb-4 border rounded"
           />
-        </div>
-
-        <div>
-          <label>Category</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            required
+            className="w-full p-2 mb-4 border rounded"
           >
             <option value="tech">Tech</option>
             <option value="health">Health</option>
             <option value="finance">Finance</option>
             <option value="trading">Trading</option>
           </select>
-        </div>
-
-        <div>
-          <label>Book Title</label>
-          <input
-            type="text"
-            value={bookTitle}
-            onChange={(e) => setBookTitle(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <label>Book Avatar (URL)</label>
-          <input
-            type="text"
-            value={bookAvatar}
-            onChange={(e) => setBookAvatar(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <label>PDF File</label>
           <input
             type="file"
-            onChange={handleFileChange}
-            required
+            onChange={(e) => setFile(e.target.files[0])}
+            className="w-full p-2 mb-4 border rounded"
           />
-        </div>
-
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={isPublic}
-              onChange={() => setIsPublic(!isPublic)}
-            />
-            Make Material Public
-          </label>
-        </div>
-
-        {errorMessage && <div className="error">{errorMessage}</div>}
-
-        <button type="submit">Upload Material</button>
-      </form>
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 w-full"
+          >
+            Upload
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
 
-export default UploadMaterialForm;
+export default UploadMaterial;
