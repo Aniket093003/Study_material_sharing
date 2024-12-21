@@ -1,5 +1,5 @@
 import express from "express"
-import  upload  from "../config/multerConfig.js";
+import  upload  from "../middleware/multer.middleware.js";
 import { uploadMaterial, getMaterials } from '../controllers/materialController.js';
 import authUser from "../middleware/authMiddleware.js"
 const materialRouter = express.Router();
