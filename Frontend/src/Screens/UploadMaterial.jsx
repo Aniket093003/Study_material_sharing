@@ -8,6 +8,7 @@ const UploadMaterial = ({ closeModal }) => {
   const [file, setFile] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +23,14 @@ const UploadMaterial = ({ closeModal }) => {
       return;
     }
 
+    const allowedTypes = ["application/pdf"];
+    if (!allowedTypes.includes(file.type)) {
+      setError("Only PDF files are allowed.");
+      return;
+    }
+
+    setLoading(true); 
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
@@ -30,23 +39,18 @@ const UploadMaterial = ({ closeModal }) => {
 
     try {
       const token = localStorage.getItem("authToken");
-      const response = await axios.post(
-        "http://localhost:4000/api/material/upload",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      await axios.post("http://localhost:4000/api/material/upload", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       setSuccessMessage("Material uploaded successfully!");
       setError("");
-
       setTitle("");
       setDescription("");
-      setCategory("");
+      setCategory("tech");
       setFile(null);
 
       setTimeout(() => {
@@ -54,6 +58,8 @@ const UploadMaterial = ({ closeModal }) => {
       }, 1500);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to upload material.");
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -70,7 +76,7 @@ const UploadMaterial = ({ closeModal }) => {
     >
       <div
         className="bg-white p-6 rounded-lg w-96"
-        onClick={(e) => e.stopPropagation()} 
+        onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-bold mb-4 text-center">Upload Material</h2>
 
@@ -111,9 +117,12 @@ const UploadMaterial = ({ closeModal }) => {
           />
           <button
             type="submit"
-            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 w-full"
+            className={`bg-blue-600 text-white px-6 py-3 rounded-md w-full ${
+              loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+            }`}
+            disabled={loading}
           >
-            Upload
+            {loading ? "Uploading..." : "Upload"}
           </button>
         </form>
       </div>
