@@ -5,8 +5,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const signupUser = async (req, res) => {
+  //get data from frontend
     const { fullName, email, password } = req.body;
-
+  //validate feilds are not empty
     if (!email || !password || !fullName) {
       return res.status(411).json({
         Error: true,
@@ -14,6 +15,7 @@ const signupUser = async (req, res) => {
       });
     }
     try {
+  //validate existing user
       const existingUser = await User.findOne({
         email,
       });
@@ -22,9 +24,10 @@ const signupUser = async (req, res) => {
           message: "you already have an account please login",
         });
       }
+  // Hash Password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-  
+  //save the user
       const user = await User.create({
           fullName,
           email,
