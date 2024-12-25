@@ -1,6 +1,5 @@
 import express from "express";
 import dotenv from "dotenv";
-import multer from "multer";
 dotenv.config();
 import cookieParser from "cookie-parser";
 import connectDB from "./src/db/index.js";
