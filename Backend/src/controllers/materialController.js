@@ -1,4 +1,3 @@
-import cloudinary from '../config/cloudinary.js';
 import Book from '../models/material.model.js';
 
 const uploadMaterial = async (req, res) => {
