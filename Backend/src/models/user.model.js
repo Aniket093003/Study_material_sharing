@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt";
 import dotenv from 'dotenv';
 dotenv.config();
 const userSchema = new mongoose.Schema(
@@ -42,11 +43,12 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 };
 
 userSchema.methods.generateAccessToken = function () {
+  if (!process.env.ACCESS_TOKEN_SECRET) {
+    throw new Error("ACCESS_TOKEN_SECRET is not defined in the environment variables.");
+  }
   return jwt.sign({
       _id: this._id,
       email: this.email,
-      username: this.username,
-      fullName: this.fullName
   },
       process.env.ACCESS_TOKEN_SECERT,
       {
@@ -58,6 +60,9 @@ userSchema.methods.generateAccessToken = function () {
 }
 
 userSchema.methods.generateRefreshToken = function () {
+  if (!process.env.REFRESH_TOKEN_SECRET) {
+    throw new Error("REFRESH_TOKEN_SECRET is not defined in the environment variables.");
+  }
   return jwt.sign({
       _id: this._id,
   },
@@ -70,6 +75,10 @@ userSchema.methods.generateRefreshToken = function () {
 
 }
 
-const User = mongoose.model("User", userSchema);
+console.log("ACCESS_TOKEN_SECRET:", process.env.ACCESS_TOKEN_SECRET);
+console.log("REFRESH_TOKEN_SECRET:", process.env.REFRESH_TOKEN_SECRET);
 
-export default User;
+
+export const User = mongoose.model("User", userSchema);
+
+
